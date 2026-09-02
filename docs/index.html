@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaTense: Mitigating Latent Collapse in Activation Steering via Geometric Alignment</title>
+  <meta name="description" content="A training-free dynamic steering framework that modulates intervention strength per token based on local hidden state geometry, eliminating text looping and scaling LLM test-time compute.">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="LaTense: Mitigating Latent Collapse in Activation Steering via Geometric Alignment">
+  <meta property="og:description" content="Dynamic, geometry-aware activation steering for LLMs with 0.00% text looping and 4.6x token efficiency.">
+  <meta property="og:url" content="https://nathanegbuna.com/latense">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LaTense: Mitigating Latent Collapse in Activation Steering">
+  <meta name="twitter:description" content="Dynamic, geometry-aware activation steering for LLMs with 0.00% text looping and 4.6x token efficiency.">
+
+  <!-- Fonts & MathJax -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$']],
+        displayMath: [['$$', '$$']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+  <link rel="stylesheet" href="style.css?v=2007">
+</head>
+<body>
+
+  <!-- Hero Section (Clarity Academic Header) -->
+  <div class="hero-wrapper">
+    <div class="hero-container">
+      <h1 class="paper-title">LaTense: Mitigating Latent Collapse in Activation Steering via Geometric Alignment</h1>
+
+      <div class="author-list">Nathan Egbuna</div>
+      <div class="affiliation">
+        University of Pennsylvania &nbsp;&nbsp;&nbsp; <a href="mailto:egbunanathan@gmail.com" class="email">egbunanathan@gmail.com</a> &nbsp;&nbsp;&nbsp; <span class="preprint-tag">Preprint, 2026</span>
+      </div>
+
+      <!-- Abstract -->
+      <div class="hero-abstract">
+        <p>
+          Latent space steering is a promising training-free paradigm for LLM control, yet current static interventions often trigger catastrophic text looping and reasoning collapse. We propose <strong>LaTense</strong> (<strong>Lat</strong>ent S<strong>ense</strong>), a dynamic steering framework that modulates intervention strength based on the local geometric alignment between the hidden state and a reasoning vector.
+        </p>
+        <p>
+          By applying a cosine penalty $1 - \cos(h, v)$ and norm-proportional scaling $\frac{\|h\|}{\|v\|}$, LaTense acts as a restorative force that stabilizes inference trajectories. We evaluate LaTense across three model families (<strong>Llama 3.1 8B Instruct</strong>, <strong>Gemma 2 9B IT</strong>, and <strong>Qwen-2.5-7B-Instruct</strong>) on StrategyQA, MATH-500, and TriviaQA. Our results characterize the geometric limits of activation steering: while steering gains are bounded by task type, LaTense consistently eliminates text looping, reducing repetition rates to <strong>0.00%</strong> across all architectures while achieving a <strong>4.6× reduction in token compute</strong> over sampling baselines.
+        </p>
+      </div>
+
+      <!-- Clarity Pill Buttons -->
+      <div class="button-row">
+        <a href="latense_paper.pdf" target="_blank" class="clarity-btn">
+          Paper
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </a>
+        <a href="https://github.com/negbuna/latense" target="_blank" class="clarity-btn">
+          Code &amp; Vectors
+          <svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+        </a>
+        <a href="#interactive" class="clarity-btn">
+          Interactive Demo
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="main-container">
+
+    <!-- Section 1: Interactive Demo -->
+    <section id="interactive" class="content-section">
+      <h2 class="section-title">Interactive Geometric Governor</h2>
+      <p class="section-p">
+        Drag the angle slider $\theta$ below to observe how LaTense dynamically modulates intervention magnitude $\Delta h$ in real time. When the hidden state $h$ is naturally aligned with the reasoning vector $v$ (small $\theta$), intervention attenuates toward zero to preserve critical factual circuits; when $h$ diverges (large $\theta$), restorative pressure peaks to rescue the reasoning trajectory.
+      </p>
+
+      <div class="visualizer-card">
+        <div class="visualizer-header">
+          <h4>Interactive Steering Visualizer</h4>
+        </div>
+        <div class="visualizer-body">
+          <!-- Canvas Frame -->
+          <div class="canvas-wrapper">
+            <canvas id="vector-canvas" width="420" height="300"></canvas>
+          </div>
+
+          <!-- Controls & Telemetry -->
+          <div class="controls-wrapper">
+            <div class="control-group">
+              <label for="angle-slider">
+                <span>Alignment Angle (θ)</span>
+                <span id="angle-val" style="font-family: var(--font-mono); color: #ea580c;">60°</span>
+              </label>
+              <input type="range" id="angle-slider" min="0" max="180" value="60" step="1">
+            </div>
+
+            <div class="control-group">
+              <label for="alpha-slider">
+                <span>Steering Coefficient (α)</span>
+                <span id="alpha-val" style="font-family: var(--font-mono); color: #2563eb;">0.50</span>
+              </label>
+              <input type="range" id="alpha-slider" min="0" max="2" value="0.5" step="0.05">
+            </div>
+
+            <div class="metrics-panel">
+              <div class="metric-item">
+                <span class="metric-label">Cosine Sim cos(θ)</span>
+                <span id="cos-val" class="metric-value">0.500</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Penalty (1 - cos θ)</span>
+                <span id="penalty-val" class="metric-value" style="color: #d97706;">0.500</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Effective ||Δh||</span>
+                <span id="mag-val" class="metric-value" style="color: #16a34a;">0.250</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Steering State</span>
+                <span id="state-val" class="metric-value" style="font-size: 0.95rem; color: #2563eb;">Nominal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Motivation -->
+    <section class="content-section">
+      <h2 class="section-title">Motivation: The Latent Collapse Problem</h2>
+      <p class="section-p">
+        Activation addition—adding a static steering vector $v$ across inference steps $(h' = h + \alpha v)$—has emerged as a compelling training-free method for controlling model behavior. However, static interventions apply constant, rigid pressure regardless of the model's instantaneous representational state.
+      </p>
+
+      <div class="card-grid">
+        <div class="feature-card">
+          <h4>Circuit Overwriting</h4>
+          <p>In highly-optimized dense architectures (e.g. Gemma 2 and Qwen 2.5), constant steering overrides delicate factual and syntax circuits, triggering catastrophic reasoning degradation.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Text-Looping Collapse</h4>
+          <p>Static interventions trap generation trajectories in degenerate self-reinforcing basins, inflating repetition rates up to <strong>38.07%</strong> under standard CAA.</p>
+        </div>
+        <div class="feature-card">
+          <h4>Inflexible Strength</h4>
+          <p>A constant coefficient $\alpha$ over-steers states that are already well-aligned while under-correcting severely drifted tokens.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: The LaTense Mechanism -->
+    <section class="content-section">
+      <h2 class="section-title">The LaTense Mechanism</h2>
+      <p class="section-p">
+        LaTense dynamically modulates steering intensity per token through two geometric principles:
+      </p>
+      
+      <p class="section-p">
+        <strong>1. Alignment Attenuation (Cosine Penalty):</strong> We attenuate steering pressure proportionally to local directional alignment:
+        $$G_{align}(h, v) = 1 - \cos(h, v) = 1 - \frac{h \cdot v}{\|h\| \|v\|}$$
+      </p>
+
+      <p class="section-p">
+        <strong>2. Manifold-Consistency (Norm Scaling):</strong> We scale proportionally to the relative magnitude of the hidden state to prevent out-of-distribution norm displacement:
+        $$G_{norm}(h, v) = \frac{\|h\|}{\|v\|}$$
+      </p>
+
+      <p class="section-p">
+        Combining both geometric gates yields the closed-form LaTense intervention applied at each target layer:
+        $$h' = h + \alpha \cdot (1 - \cos(h, v)) \cdot \frac{\|h\|}{\|v\|} \cdot v$$
+      </p>
+
+      <div class="figure-block">
+        <img src="figures/steering_tradeoff.png" alt="Steering Tradeoff Curves">
+        <p class="figure-caption">
+          <strong>Figure 1: Accuracy vs. Repetition Tradeoff Curves.</strong> Accuracy (solid) and Repetition Rate (dashed) across steering strengths $\alpha$. Static CAA triggers rapid repetition collapse, whereas LaTense maintains 0.00% repetition across all coefficient ranges.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 4: Empirical Results -->
+    <section class="content-section">
+      <h2 class="section-title">Benchmark Performance & Zero Looping</h2>
+      <p class="section-p">
+        We evaluate LaTense across three benchmark tasks spanning strategic commonsense reasoning (<strong>StrategyQA</strong>), formal multi-step mathematics (<strong>MATH-500</strong>), and open-domain factual retrieval (<strong>TriviaQA</strong>).
+      </p>
+
+      <div class="table-wrapper">
+        <table class="academic-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Task</th>
+              <th>Greedy Base</th>
+              <th>Static CAA</th>
+              <th>LaTense (Ours)</th>
+              <th>Self-Consistency $(k=5)$</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3"><strong>Llama 3.1 8B Instruct</strong></td>
+              <td>StrategyQA</td>
+              <td>71.40%</td>
+              <td>71.75%</td>
+              <td class="highlight-row"><strong>73.65%</strong></td>
+              <td>74.20%</td>
+            </tr>
+            <tr>
+              <td>MATH-500</td>
+              <td>43.80%</td>
+              <td>44.07%</td>
+              <td class="highlight-row"><strong>44.20%</strong></td>
+              <td>48.60%</td>
+            </tr>
+            <tr>
+              <td>TriviaQA</td>
+              <td>76.04%</td>
+              <td>75.30%</td>
+              <td class="highlight-row"><strong>76.04%</strong></td>
+              <td>76.80%</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Gemma 2 9B IT</strong></td>
+              <td>StrategyQA</td>
+              <td>57.40%</td>
+              <td>65.60%</td>
+              <td class="highlight-row"><strong>65.60%</strong> (+8.2%)</td>
+              <td>62.80%</td>
+            </tr>
+            <tr>
+              <td>MATH-500</td>
+              <td>64.40%</td>
+              <td>65.75%</td>
+              <td class="highlight-row"><strong>65.40%</strong></td>
+              <td>71.20%</td>
+            </tr>
+            <tr>
+              <td>TriviaQA</td>
+              <td>70.18%</td>
+              <td>68.75%</td>
+              <td class="highlight-row"><strong>69.83%</strong></td>
+              <td>70.35%</td>
+            </tr>
+            <tr>
+              <td rowspan="3"><strong>Qwen-2.5-7B-Instruct</strong></td>
+              <td>StrategyQA</td>
+              <td>70.20%</td>
+              <td>67.20%</td>
+              <td class="highlight-row"><strong>68.00%</strong></td>
+              <td>72.40%</td>
+            </tr>
+            <tr>
+              <td>MATH-500</td>
+              <td>80.80%</td>
+              <td>80.40%</td>
+              <td class="highlight-row"><strong>80.80%</strong></td>
+              <td>84.60%</td>
+            </tr>
+            <tr>
+              <td>TriviaQA</td>
+              <td>53.30%</td>
+              <td>52.72%</td>
+              <td class="highlight-row"><strong>53.30%</strong></td>
+              <td>54.20%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrapper" style="margin-top: 2rem;">
+        <table class="academic-table">
+          <thead>
+            <tr>
+              <th>Model Family</th>
+              <th>Task</th>
+              <th>Static CAA Repetition</th>
+              <th>LaTense Repetition</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Llama 3.1 8B Instruct</td>
+              <td>StrategyQA</td>
+              <td class="badge-red">1.05%</td>
+              <td class="badge-green">0.00%</td>
+              <td>Looping Eliminated</td>
+            </tr>
+            <tr>
+              <td>Gemma 2 9B IT</td>
+              <td>StrategyQA</td>
+              <td class="badge-red">3.35%</td>
+              <td class="badge-green">0.00%</td>
+              <td>Looping Eliminated</td>
+            </tr>
+            <tr>
+              <td>Qwen-2.5-7B-Instruct</td>
+              <td>MATH-500 (Sweep)</td>
+              <td class="badge-red">38.07%</td>
+              <td class="badge-green">0.00%</td>
+              <td>Looping Eliminated</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Efficiency Frontier -->
+    <section class="content-section">
+      <h2 class="section-title">Efficiency Frontier (4.6× Compute Reduction)</h2>
+      <p class="section-p">
+        While sampling-based test-time compute methods (like Self-Consistency $(k=5)$ or Best-of-$N$) generate multiple full candidate chains to aggregate majority votes, LaTense executes on a <strong>single forward pass $(k=1)$</strong> with negligible geometric gating overhead (&lt;1.2%), reducing total generated tokens by <strong>4.6×</strong> while remaining competitive with multi-path sampling.
+      </p>
+
+      <div class="figure-block">
+        <img src="figures/teaser_efficiency.png" alt="Efficiency Frontier Comparison">
+        <p class="figure-caption">
+          <strong>Figure 2: Accuracy vs. Test-Time Compute (FLOPs/Tokens).</strong> LaTense achieves substantial accuracy improvements with zero sample-multiplicity overhead, providing a highly efficient alternative to heavy multi-sample generation.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 6: Citation -->
+    <section id="citation" class="content-section">
+      <h2 class="section-title">BibTeX Citation</h2>
+      <div class="bibtex-card">
+        <button class="copy-btn" onclick="copyBibtex()">Copy</button>
+        <pre id="bibtex-code">@misc{egbuna2026latense,
+  title={LaTense: Mitigating Latent Collapse in Activation Steering via Geometric Alignment},
+  author={Egbuna, Nathan},
+  year={2026},
+  note={Preprint},
+  url={https://nathanegbuna.com/latense}
+}</pre>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>© 2026 Nathan Egbuna. Built on the <a href="https://shikun.io/projects/clarity" target="_blank">Clarity</a> academic research template.</p>
+    </div>
+  </footer>
+
+  <script src="app.js?v=2007"></script>
+  <script>
+    function copyBibtex() {
+      const code = document.getElementById('bibtex-code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

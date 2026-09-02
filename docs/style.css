@@ -1,0 +1,431 @@
+/* Clarity Academic Template CSS for LaTense */
+:root {
+  --primary-color: #3f4552;
+  --primary-hover: #23272e;
+  --text-color: #3a3f47;
+  --text-muted: #6b7280;
+  --heading-color: #363b44;
+  --bg-page: #ffffff;
+  --bg-hero: #e0e4e6;
+  --bg-card: #ffffff;
+  --bg-subtle: #f8fafc;
+  --border-color: #e5e7eb;
+  --border-subtle: #f1f5f9;
+  --code-bg: #0f172a;
+  --font-main: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Fira Code", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-page);
+  color: var(--text-color);
+  line-height: 1.65;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--heading-color);
+  text-decoration: underline;
+  text-decoration-color: rgba(58, 63, 71, 0.35);
+  text-underline-offset: 2px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+a:hover {
+  color: #000000;
+  text-decoration-color: currentColor;
+}
+
+/* Hero Section (Clarity Style) */
+.hero-wrapper {
+  background-color: var(--bg-hero);
+  padding: 5rem 1.5rem 2rem;
+}
+
+.hero-container {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.paper-title {
+  font-size: 2.15rem;
+  font-weight: 400;
+  color: var(--heading-color);
+  line-height: 1.35;
+  margin-bottom: 1.75rem;
+  letter-spacing: -0.005em;
+}
+
+.author-list {
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--heading-color);
+  margin-bottom: 0.4rem;
+}
+
+.affiliation {
+  font-size: 0.92rem;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+}
+
+.affiliation .email {
+  color: var(--text-muted);
+  font-family: var(--font-main);
+  font-style: italic;
+  font-size: 0.92rem;
+  text-decoration-color: rgba(107, 114, 128, 0.4);
+}
+
+.affiliation .preprint-tag {
+  font-style: italic;
+}
+
+/* Action Buttons (Clarity Pills) */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 4rem;
+}
+
+.clarity-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--heading-color);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  transition: all 0.15s ease;
+  text-decoration: none !important;
+}
+
+.clarity-btn:hover {
+  background-color: #ffffff;
+  color: var(--heading-color);
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+/* Hero Abstract Block */
+.hero-abstract {
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.hero-abstract p {
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+.hero-abstract p:last-child {
+  margin-bottom: 0;
+}
+
+/* Main Content Layout */
+.main-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.content-section {
+  margin-bottom: 3.5rem;
+}
+
+.section-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.005em;
+}
+
+.section-p {
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+/* Feature Grid / Cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem 1.75rem;
+  margin: 1.75rem 0;
+}
+
+.feature-card {
+  padding: 0;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.feature-card h4 {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--heading-color);
+  margin-bottom: 0.4rem;
+}
+
+.feature-card p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Interactive Visualizer Card */
+.visualizer-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.visualizer-header {
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.visualizer-header h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.visualizer-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #fafafa;
+}
+
+@media (max-width: 768px) {
+  .visualizer-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.canvas-wrapper {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#vector-canvas {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
+}
+
+.controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.control-group label {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--heading-color);
+  margin-bottom: 0.35rem;
+}
+
+.control-group input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary-color);
+}
+
+.metrics-panel {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-family: var(--font-main);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  margin-bottom: 0.3rem;
+}
+
+.metric-value {
+  font-family: var(--font-main);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+/* Academic Tables (Booktabs Style) */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+}
+
+table.academic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+table.academic-table th,
+table.academic-table td {
+  padding: 0.85rem 1.15rem;
+}
+
+table.academic-table thead tr {
+  border-bottom: 2px solid #334155;
+  background-color: #f8fafc;
+}
+
+table.academic-table th {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+table.academic-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+table.academic-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.academic-table tbody tr.highlight-row {
+  background-color: #eff6ff;
+  font-weight: 600;
+}
+
+.badge-green {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.badge-red {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Figures & Captions */
+.figure-block {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.figure-block img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.figure-caption {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* BibTeX Block */
+.bibtex-card {
+  position: relative;
+  background-color: var(--code-bg);
+  border-radius: 8px;
+  padding: 1.25rem;
+  overflow-x: auto;
+}
+
+.bibtex-card pre {
+  margin: 0;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-right: 3.5rem;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Footer */
+footer {
+  border-top: 1px solid var(--border-color);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  background-color: #f8fafc;
+}
