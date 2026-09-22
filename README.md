@@ -1,4 +1,4 @@
-# LaTense: Mitigating Latent Collapse in Activation Steering via Geometric Alignment
+# LaTense: Measuring the Limits of Geometric Activation Steering
 
 [![Paper](https://img.shields.io/badge/Paper-PDF-blue.svg)](https://nathanegbuna.com/latense/latense_paper.pdf)
 [![Website](https://img.shields.io/badge/Website-Interactive_Demo-22c55e.svg)](https://nathanegbuna.com/latense)
@@ -6,7 +6,12 @@
 
 **LaTense** (**Lat**ent S**ense**) is a training-free activation steering framework that dynamically modulates intervention strength during inference based on the local geometric alignment between the model hidden state and a reasoning vector. 
 
-By applying a cosine penalty $(1 - \cos(h, v))$ and norm-proportional scaling $\frac{\|h\|}{\|v\|}$, LaTense acts as a restorative governor that eliminates text looping (reducing repetition rates to **0.00%** across Llama, Gemma, and Qwen) while achieving a **4.6x reduction in token compute** over sampling-based test-time compute baselines.
+By applying a cosine penalty $(1 - \cos(h, v))$ and norm-proportional scaling $\frac{\|h\|}{\|v\|}$, LaTense modulates how hard the intervention pushes at each token. Its clearest empirical result is on strategic reasoning with Gemma 2 9B IT, where it reaches **74.20%** on StrategyQA, **+8.6 points over static CAA** ($p < 0.0001$, paired bootstrap), at a single-pass cost of 122.7 generated tokens per problem.
+
+> **Correction notice (v2, September 2026).** An audit of the raw run logs found errors in the first release. The claims of a
+> 0.00% repetition rate and of 38.07% static-steering collapse on Qwen-2.5-7B have been **withdrawn**: repetition was never logged
+> in the reported LaTense runs, and the Qwen run used an out-of-range layer index, so no steering was applied. Reported accuracies
+> now come only from complete runs. See the website for the corrected results table.
 
 ---
 
@@ -16,9 +21,11 @@ By applying a cosine penalty $(1 - \cos(h, v))$ and norm-proportional scaling $\
    $$\Delta h = \alpha \cdot (1 - \cos(h, v)) \cdot \frac{\|h\|}{\|v\|} \cdot v$$
    This applies restorative pressure when inference trajectories drift away from the reasoning manifold while attenuating intervention on naturally aligned states to preserve factual circuits.
 
-2. **Looping Elimination**: Standard static steering (CAA) triggers severe text-looping collapse (repetition rates up to 38.07% on dense architectures like Qwen-2.5-7B). LaTense stabilizes latent trajectories and brings repetition rates down to **0.00%** across all tested model families.
+2. **What the Repetition Metric Measures**: Across 19,268 generations from 56 runs spanning six models (0.5B–9.2B), 3-gram repetition is predicted by output length (Spearman ρ = 0.881), not by steering and not by model scale: mean length predicts mean repetition across models (r = +0.967) while parameter count does not (r = −0.288). At the operating point ($\alpha = 0.3$) steering does **not** raise repetition — unsteered MATH-500 scores 35.82% (Llama) and 23.95% (Gemma) against 35.92% and 23.97% steered. A shuffled-token control (5.93% actual vs 0.20% shuffled) shows the metric detects genuine structural recurrence, such as the restated scaffolding of a long derivation, and cannot distinguish it from degenerate looping. Report the excess over that control, or a length-matched reference, rather than a bare rate.
 
-3. **Inference Efficiency**: Achieves reasoning gains competitive with Self-Consistency ($k=5$) while operating on a single forward pass ($k=1$), slashing token consumption by **4.6x**.
+3. **Behavior Under High Intensity**: Steering intensity is bounded. At $\alpha = 1.0$, logged generations reach 80.9% and 94.4% 3-gram repetition, and this collapse affects LaTense as well as static steering. All reported results use $\alpha = 0.3$, below that boundary.
+
+4. **Inference Efficiency**: Runs on a single forward pass ($k=1$), generating 122.7 tokens per problem on Gemma 2 9B IT StrategyQA against 565.9 for Self-Consistency ($k=5$, five sampled chains averaging 113.2 tokens each) — a **4.6x reduction**, confirmed against the run logs.
 
 ---
 
@@ -61,7 +68,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_id)
 governor = LaTenseGovernor(
     model=model,
     vector_path="vectors/strategy-qa_gemma-2-9b-it_L-1.pt",
-    layer=24,
+    layer=20,
     alpha=0.3
 )
 
@@ -78,7 +85,10 @@ print(tokenizer.decode(outputs[0], skip_special_tokens=True))
 
 ## Experimental Pipeline & Replication
 
-The evaluation pipeline enforces strict data disjointness across vector extraction, hyperparameter sweeps, and final evaluation splits.
+The evaluation pipeline separates vector extraction, hyperparameter sweeps, and final evaluation splits: MATH-500
+(`test[400:]`, `test[200:400]`, `test[:200]`), TriviaQA (`train[200:]` for extraction, `validation` for evaluation) and StrategyQA
+(`test[1200:]` for extraction, `test[:500]` for evaluation). One exception: the prompt-count sensitivity sweep re-extracts vectors
+through the CLI's default split handling, which for StrategyQA falls back to `test` and overlaps that sweep's own evaluation slice.
 
 ### 1. Vector Extraction
 Extract contrastive reasoning vectors ($v = \mu_{correct} - \mu_{incorrect}$) from holdout training splits:
@@ -143,7 +153,7 @@ If you find LaTense useful in your research, please cite:
 
 ```bibtex
 @misc{egbuna2026latense,
-  title={LaTense: Mitigating Latent Collapse in Activation Steering via Geometric Alignment},
+  title={LaTense: Measuring the Limits of Geometric Activation Steering},
   author={Egbuna, Nathan},
   year={2026},
   note={Preprint},
