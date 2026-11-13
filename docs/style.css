@@ -1,5 +1,10 @@
 /* Clarity Academic Template CSS for LaTense */
 :root {
+  /* One radius scale. A box nested inside another steps down one level, so the
+     inner corner reads as subordinate to the outer rather than competing with it. */
+  --radius-lg: 12px;   /* outermost cards and containers */
+  --radius-md: 8px;    /* panels inside a card; tables, figures, code blocks */
+  --radius-sm: 4px;    /* small controls sitting inside a panel */
   --primary-color: #3f4552;
   --primary-hover: #23272e;
   --text-color: #3a3f47;
@@ -124,7 +129,7 @@ a:hover {
   color: var(--heading-color);
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0.5rem 1rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-weight: 500;
   font-size: 0.73rem;
   text-transform: uppercase;
@@ -213,7 +218,7 @@ a:hover {
 .visualizer-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   margin: 1.5rem 0;
@@ -250,7 +255,7 @@ a:hover {
 .canvas-wrapper {
   background: #ffffff;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.75rem;
   display: flex;
   justify-content: center;
@@ -287,7 +292,7 @@ a:hover {
 .metrics-panel {
   background: #ffffff;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 1rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -321,7 +326,7 @@ a:hover {
 .table-wrapper {
   overflow-x: auto;
   margin: 1.5rem 0;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
   background: #ffffff;
 }
@@ -381,7 +386,7 @@ table.academic-table tbody tr.highlight-row {
   max-width: 100%;
   height: auto;
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
@@ -397,7 +402,7 @@ table.academic-table tbody tr.highlight-row {
 .bibtex-card {
   position: relative;
   background-color: var(--code-bg);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 1.25rem;
   overflow-x: auto;
 }
@@ -421,7 +426,7 @@ table.academic-table tbody tr.highlight-row {
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 0.35rem 0.75rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 0.8rem;
   cursor: pointer;
   transition: background 0.15s ease;
@@ -440,3 +445,36 @@ footer {
   color: var(--text-muted);
   background-color: #f8fafc;
 }
+
+/* Notices. Deliberately recessive: a hairline border and a near-neutral ground,
+   so a correction reads as part of the page rather than an alarm. */
+.notice {
+  margin: 1.5rem 0 0;
+  padding: 0.9rem 1.1rem;
+  background-color: #fbfbfa;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: left;
+  font-size: 0.93rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.notice--hero {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.notice-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.notice p { margin: 0; }
+.notice strong { color: var(--text-color); font-weight: 600; }

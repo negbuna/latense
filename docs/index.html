@@ -61,20 +61,20 @@
           Claims that activation steering causes or prevents &ldquo;latent collapse&rdquo; are routinely supported by n-gram repetition rates. We show that this metric is governed by output length rather than by the intervention. We reach this through a controlled study of <strong>LaTense</strong> (<strong>Lat</strong>ent S<strong>ense</strong>), a dynamic steering framework that modulates intervention strength from the local geometric alignment between the hidden state and a reasoning vector.
         </p>
         <p>
-          By applying a cosine penalty $1 - \cos(h, v)$ and norm-proportional scaling $\frac{\|h\|}{\|v\|}$, LaTense is intended to act as a restorative force on inference trajectories. In practice the cosine gate is inert &mdash; measured alignment stays near 0.03, so a norm-scaling-only ablation reproduces the method's one significant gain exactly. We evaluate LaTense across three model families (<strong>Llama 3.1 8B Instruct</strong>, <strong>Gemma 2 9B IT</strong>, and <strong>Qwen-2.5-7B-Instruct</strong>) on StrategyQA, MATH-500, and TriviaQA. Our results characterize the geometric limits of activation steering: steering gains are strongly bounded by model and task. The clearest gain is on strategic reasoning with Gemma 2 9B IT, where LaTense reaches <strong>74.20%</strong> on StrategyQA, <strong>+8.6 points over static CAA</strong> ($p &lt; 0.0001$, paired bootstrap), at a single-pass cost of 122.7 generated tokens per problem. On the remaining model-task pairs LaTense performs at or below its baselines.
+          By applying a cosine penalty $1 - \cos(h, v)$ and norm-proportional scaling $\frac{\|h\|}{\|v\|}$, LaTense is intended to act as a restorative force on inference trajectories. In practice the cosine gate is inert &mdash; measured alignment stays near 0.03, so a norm-scaling-only ablation reproduces the method's one significant gain exactly. We evaluate it on <strong>Llama 3.1 8B Instruct</strong>, <strong>Gemma 2 9B IT</strong> and <strong>Qwen-2.5-7B-Instruct</strong> across StrategyQA, MATH-500 and TriviaQA. What the gains depend on is the model and the task, far more than the method. The one clear win is strategic reasoning on Gemma 2 9B IT, where LaTense reaches <strong>74.20%</strong> on StrategyQA, <strong>+8.6 points over static CAA</strong> ($p &lt; 0.0001$, paired bootstrap), at a single-pass cost of 122.7 generated tokens per problem. On the remaining model-task pairs LaTense performs at or below its baselines.
         </p>
       </div>
 
       <!-- Correction notice -->
-      <div style="max-width: 760px; margin: 1.5rem auto 0; padding: 1rem 1.25rem; border-left: 4px solid #d97706; background: #fffbeb; border-radius: 6px; text-align: left;">
-        <p style="margin: 0 0 0.5rem; font-weight: 600;">Correction notice — v2, September 2026</p>
-        <p style="margin: 0; font-size: 0.95rem; line-height: 1.55;">
-          A re-audit of the raw run logs found errors in the first version of this page and paper. Three claims have been
-          withdrawn: the <strong>0.00% repetition rate</strong> (repetition was never logged in the reported LaTense runs),
-          the <strong>38.07% static-steering collapse on Qwen-2.5-7B</strong> (that run used an out-of-range layer index, so no
-          steering was applied and the figure reflects the unsteered model), and the accuracy table, which averaged
-          unfinished runs. The numbers below are drawn only from complete, verified runs. Repetition has since been measured directly against unsteered
-          baselines, and Qwen MATH-500 re-run at a valid layer; both results are reflected below, and the linked PDF matches this page.
+      <div class="notice notice--hero">
+        <span class="notice-label">Correction &middot; v2, September 2026</span>
+        <p>
+          Re-auditing the raw run logs turned up three errors in the first version of this page, and all three claims are
+          withdrawn. The <strong>0.00% repetition rate</strong> was never measured; those runs did not log the metric. The
+          <strong>38.07% collapse on Qwen-2.5-7B</strong> came from a run whose layer index was out of range, so nothing was
+          steered and the number describes the unsteered model. The accuracy table averaged runs that had not finished.
+          Everything below comes from complete runs, repetition is now measured against unsteered baselines, and the linked
+          PDF matches this page.
         </p>
       </div>
 
@@ -103,7 +103,9 @@
     <section id="interactive" class="content-section">
       <h2 class="section-title">Interactive Geometric Governor</h2>
       <p class="section-p">
-        The slider sweeps the alignment angle $\theta$ to show what the LaTense formula is <em>designed</em> to do: attenuate the intervention toward zero where the hidden state $h$ is already aligned with the reasoning vector $v$ (small $\theta$), and increase it where the trajectory diverges (large $\theta$). It opens at $\theta \approx 88^\circ$, because that is where real hidden states actually sit.
+        Drag $\theta$ to see what the formula does across its full range. Where the hidden state $h$ already points along the
+        reasoning vector $v$, the $(1 - \cos\theta)$ term shrinks the intervention; where the trajectory has drifted, it grows.
+        The slider opens at $88^\circ$ rather than mid-range, for the reason given below it.
       </p>
 
       <div class="visualizer-card">
@@ -156,35 +158,36 @@
         </div>
       </div>
 
-      <div style="margin: 1.5rem 0 0; padding: 1rem 1.25rem; border-left: 4px solid #d97706; background: #fffbeb; border-radius: 6px; text-align: left; font-size: 0.95rem; line-height: 1.55;">
-        <strong>Why this is a toy.</strong> Across 19,268 measured generations the alignment
-        $\cos(h, v)$ stays near <strong>0.03</strong> &mdash; an angle of roughly 88&deg; &mdash; so the
-        $(1 - \cos\theta)$ penalty never leaves a narrow band close to 1. The gate is effectively a
-        constant multiplier, and a norm-scaling-only ablation reproduces the method's one significant gain
-        exactly. The attenuation regime on the left of this slider is real arithmetic that the models
-        never actually enter.
-      </div>
+      <p class="section-p">
+        <strong>Where 88&deg; comes from.</strong> Over 19,268 generations the measured cosine between $h$ and $v$ sits near
+        <strong>0.03</strong>, and $\arccos(0.03) \approx 88.3^\circ$: real hidden states run almost perpendicular to the vector
+        being added. That is ordinary behaviour in high dimensions, where any fixed direction is close to orthogonal to nearly
+        everything. So $(1 - \cos\theta)$ holds around 0.97 for the whole of generation, the gate acts as a constant multiplier,
+        and norm scaling on its own reproduces the method's one significant gain. The left half of this slider is correct
+        arithmetic for a regime these models never enter.
+      </p>
     </section>
 
     <!-- Section 2: Motivation -->
     <section class="content-section">
       <h2 class="section-title">Motivation: The Latent Collapse Problem</h2>
       <p class="section-p">
-        Activation addition—adding a static steering vector $v$ across inference steps $(h' = h + \alpha v)$—has emerged as a compelling training-free method for controlling model behavior. However, static interventions apply constant, rigid pressure regardless of the model's instantaneous representational state.
+        Activation addition adds a fixed vector $v$ at every inference step: $h' = h + \alpha v$. It needs no training, which
+        is most of its appeal. The cost is that the same pressure lands on every token, whatever the model happens to be doing
+        at the time.
       </p>
 
       <div class="card-grid">
         <div class="feature-card">
-          <h4>Circuit Overwriting</h4>
-          <p>Constant steering applies the same pressure to every token, including tokens where the model is already on a correct trajectory and factual recall is in progress.</p>
+          <h4>Uniform Pressure</h4>
+          <p>A constant coefficient pushes every token equally hard, which is wrong in both directions at once. It over-steers
+          states that are already on a correct trajectory, including tokens in the middle of factual recall, where the useful
+          intervention is none at all. It simultaneously under-corrects the tokens that have genuinely drifted and need the most
+          help. How hard to push depends on where the model currently sits, and static addition has no way to ask.</p>
         </div>
         <div class="feature-card">
           <h4>Text-Looping Collapse</h4>
           <p>At high intensity, steering traps generation in degenerate loops. At $\alpha = 1.0$ we log 3-gram repetition of <strong>80.9%</strong> and <strong>94.4%</strong> on individual StrategyQA generations, and this affects LaTense as well as static steering. At the operating point ($\alpha = 0.3$) steering leaves repetition essentially untouched: 35.92% against 35.82% unsteered on Llama MATH-500, and 23.97% against 23.95% on Gemma. The collapse is a ceiling on usable intensity, not a failure mode any of these methods removes.</p>
-        </div>
-        <div class="feature-card">
-          <h4>Inflexible Strength</h4>
-          <p>A constant coefficient $\alpha$ over-steers states that are already well-aligned while under-correcting severely drifted tokens.</p>
         </div>
       </div>
     </section>
@@ -212,10 +215,10 @@
       </p>
 
       <p class="section-p">
-        <strong>A note on the cosine term.</strong> Across every logged run, the measured alignment between the hidden state and the
-        reasoning vector is small, $\cos(h, v) \approx 0.02$ to $0.07$, so the penalty $(1 - \cos)$ stays near $0.97$ throughout
-        generation. In practice the gate varies little, and the intervention behaves close to pure norm-proportional scaling.
-        Consistent with this, the norm-scaling-only ablation matches full LaTense example-for-example on Gemma 2 9B IT StrategyQA.
+        <strong>A note on the cosine term.</strong> The measured alignment is small in every logged run, $\cos(h, v)$ between
+        $0.02$ and $0.07$, which is the same observation as the $88^\circ$ above. The consequence worth recording is how exact it
+        turns out to be: the norm-scaling-only ablation matches full LaTense example-for-example on Gemma 2 9B IT StrategyQA, all
+        371 of 500 correct.
       </p>
 
       <div class="figure-block">
@@ -328,8 +331,8 @@
       </p>
 
       <p class="section-p">
-        <strong>Repetition, measured.</strong> The 0.00% claim is withdrawn, and the measurement that replaces it is more interesting
-        than the claim was. Running unsteered greedy decoding over the same MATH-500 problems gives <strong>35.82%</strong> (Llama) and
+        <strong>Repetition, measured.</strong> The replacement for the withdrawn 0.00% is a more interesting number than the claim
+        was. Running unsteered greedy decoding over the same MATH-500 problems gives <strong>35.82%</strong> (Llama) and
         <strong>23.95%</strong> (Gemma) 3-gram repetition, against 35.92% and 23.97% under static steering: the intervention moves the
         rate by +0.10 and +0.02 points, and Qwen behaves the same way (39.13% steered vs 38.07% unsteered). Across
         <strong>19,268 generations from 56 runs</strong> spanning six models from 0.5B to 9.2B parameters, repetition is predicted by
@@ -341,8 +344,8 @@
       <p class="section-p">
         <strong>What the metric is actually detecting.</strong> Shuffling the words within each generation — holding length and
         vocabulary fixed, destroying only word order — collapses repetition from <strong>5.93% to 0.20%</strong> across 3,636
-        generations. So this is not a chance-collision effect of long sequences: it is genuine recurrence of surface form, the
-        restated "divide, multiply, subtract, bring down" scaffolding of a long derivation. The metric therefore conflates
+        generations. Long sequences are not simply colliding by chance, then. What the metric catches is real recurrence of surface
+        form: the restated "divide, multiply, subtract, bring down" scaffolding of a long derivation. So it conflates
         <em>task-intrinsic structural repetition</em> with <em>degenerate looping</em> and scores both in the same 24–38% band,
         though only the second is a failure. A correct polynomial long division scores 68.9%. The fix is to report the excess over
         a shuffled control, or a length-matched unsteered reference, rather than a bare rate — otherwise the metric rewards any
@@ -350,19 +353,13 @@
       </p>
 
       <p class="section-p">
-        <strong>It is not an artifact of choosing trigrams.</strong> Recomputing both the actual and the shuffled rate for
-        $n \in \{2,3,4,5\}$ over the 3,446 retained generations of at least five words, the rank correlation with length holds at
-        every order (&rho; = 0.804, 0.769, 0.742, 0.693) and the excess over the shuffled control stays substantial
-        (+8.32, +6.04, +3.96, +2.79 points).
-      </p>
-
-      <p class="section-p">
-        <strong>It does not depend on model scale either.</strong> Across six models spanning a 18&times; parameter range, mean output
-        length predicts mean repetition on MATH-500 (<em>r</em> = +0.967) while parameter count does not (<em>r</em> = &minus;0.288).
-        Within the Qwen family a 15&times; increase in parameters (0.5B &rarr; 7.6B) moves repetition by 2.5 points and not even
-        monotonically (38.31%, 36.67%, 39.13%), whereas writing ~200 more tokens than Gemma moves it by 14. The high repetition once
-        read as evidence of Qwen being "hyper-optimized" is reproduced by a 0.5B Qwen, and is explained by Qwen writing ~545-token
-        derivations where Gemma writes ~355.
+        <strong>Two obvious objections, both checked.</strong> The trigram choice is not doing the work: recomputed for
+        $n \in \{2,3,4,5\}$, the rank correlation with length holds at every order (&rho; = 0.804, 0.769, 0.742, 0.693) and the
+        excess over the shuffled control stays between +8.32 and +2.79 points. Neither is this a scale effect. Across six models
+        spanning an 18&times; parameter range, mean output length predicts mean repetition (<em>r</em> = +0.967) and parameter count
+        does not (<em>r</em> = &minus;0.288); inside the Qwen family, going from 0.5B to 7.6B moves repetition 2.5 points and not
+        even monotonically. A 0.5B Qwen reproduces the 38% once read as evidence of "hyper-optimization", for the plain reason
+        that it writes the same ~545-token derivations. Full tables are in the paper.
       </p>
     </section>
 
